@@ -1,0 +1,80 @@
+﻿@model UT.Presentation.Web.Models.ViewModels.BankInstitutionsViewModel
+@{ ViewBag.Title = "Index"; }
+
+@{
+    var hiddenIfNoBanks = Model.BankInstitutions.Count < 1 ? "hidden" : string.Empty;
+    var hiddenIfAnyBank = string.IsNullOrEmpty(hiddenIfNoBanks) ? "hidden" : string.Empty;
+}
+<div id="bankInstitutionSection">    
+    <!--BEGIN wp_bank-institution-block-->
+    <div class="wp-bank-institution-block">
+        <div class="ctrl-page-subtitle">
+            <h2>@Model.Title</h2>
+        </div>
+        <table class="banks-table">
+            <thead class="@hiddenIfNoBanks">
+                <tr>
+                    <th class="table-header-institution col-sm-4">@Model.InstitutionLabel</th>
+                    <th class="table-header-number">@Model.AccountNumberLabel</th>
+                    <th class="table-header-autopay">@Model.AutopayText</th>
+                    <th class="table-header-controls"> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var account in Model.BankInstitutions)
+                {
+                    var autopayCheckClass = account.IsAutoPayEnrolled ? string.Empty : "hidden";
+                    var bankRowId = "bank_" + account.AccountId;
+                    var renderedBankRowId = "#" + bankRowId;
+                <!--BEGIN ctrl_bank-institution-row-->
+                    <tr class="ctrl_bank-institution-row" id="@bankRowId" data-account-nickname="@account.AccountNickname" data-editable="@account.IsEditable.ToString().ToLower()">
+                        <td class="institution-name">
+                            <h5>@account.AccountNickname</h5>
+                            <p class="account-details">@account.FinancialInstitution</p>
+                        </td>
+                        <td class="institution-number">
+                            <p class="account-details number">
+                                <span class="filler">@Model.AccountMaskText</span><span class="text">@Model.EndingText </span><span class="maskedAccountNumber">@account.AccountNumber.Substring(Math.Max(0, account.AccountNumber.Length - 4))</span>
+                            </p>
+                        </td>
+                        <td class="institution-autopay">
+                            <span class="autopay-text  @autopayCheckClass">Auto-pay</span>
+                            <i class="fa fa-check autopay-check @autopayCheckClass"></i>
+                        </td>
+                        <td class="institution-controls">
+                            <ul id="pending" class="row-controls">
+                                @{
+                                    var hideIfEditable = account.IsEditable ? "hidden" : "";
+                                    var hideIfNotEditable = !account.IsEditable ? "hidden" : "";
+
+                                    var hideIfDeletable = account.IsEditable && !account.IsAutoPayEnrolled ? "hidden" : "";
+                                    var hideIfNotDeletable = !account.IsEditable || account.IsAutoPayEnrolled ? "hidden" : "";
+                                }
+                                <li>
+                                    <a class="@hideIfNotEditable modal-trigger" href="#" data-modal-target="#addAccountModal" data-account-id="@account.AccountId">@Model.EditLabel</a>
+                                    <div class="ctrl-tooltip top @hideIfEditable">
+                                        <a href="#" role="button" tabindex="2" data-html="true" data-ui="popover-link" data-toggle="popover" data-trigger="focus" data-animation="true" data-placement="top" data-content="<p>Account has scheduled payments.</p><span class='fa fa-times close-popover'></span>" data-title="Payment Pending" data-container="#pending" class="btn-link popover-link no-underline"><span class="pb-tooltip-text">@Model.EditLabel</span></a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="@hideIfNotDeletable delete-bank" href="#" data-toggle="modal" data-target="#deleteAccountModal">@Model.DeleteLabel</a>
+                                    <div class="ctrl-tooltip top @hideIfDeletable">
+                                        <a href="#" role="button" tabindex="2" data-html="true" data-ui="popover-link" data-toggle="popover" data-trigger="focus" data-animation="true" data-placement="top" data-content="<p>Account is enrolled on autopay or has scheduled payments.</p><span class='fa fa-times close-popover'></span>" data-title="Payment Pending" data-container="#pending" class="btn-link popover-link no-underline"><span class="pb-tooltip-text">@Model.DeleteLabel</span></a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                <!--END ctrl_bank-institution-row-->
+                }
+                <tr class="ctrl-add-info-row">
+                    <td colspan="6">
+                        <a id="addAnotherBankButton" href="#" data-modal-target="#addAccountModal" class="@hiddenIfNoBanks modal-trigger"><i class="fa fa-plus-circle"></i>@Model.AddAnotherLabel</a>
+                        <a id="addBankButton" href="#" data-modal-target="#addAccountModal" class="@hiddenIfAnyBank modal-trigger"><i class="fa fa-plus-circle"></i>@Model.AddLabel</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--END wp_bank-institution-block-->    
+</div>

@@ -1,0 +1,34 @@
+﻿@using Sitecore.Mvc
+
+<div class="row">
+    <div class="col-sm-5">
+        <!--BEGIN .wp_login-block-->
+        <div class="wp_login-block">
+            @using(Html.BeginForm("Login","Login",FormMethod.Post))
+            {
+
+                @Html.AntiForgeryToken()
+            
+                <div class="ctrl-page-subtitle">
+                    <h2 class="visible-xs">Sign in with your customer number</h2>
+                </div>
+                <div id="pageUserName" class="form-group username-group">
+                    <label for="userName">Customer Number</label>
+                    <!--BEGIN ctrl_user-id-field-->
+                    <div class="ctrl_user-id-field">
+                        <div class="input-wrapper">
+                            <input type="number" tabindex="1" class="form-control" placeholder="User ID" id="customerNumber" name="customerNumber" required="">
+                        </div>
+                    </div>
+                    <!--END ctrl_user-id-field-->
+                </div>
+            <div class="button-container">
+                <!--BEGIN ctrl_btn-primary-->
+                <button tabindex="1" class="btn btn-primary ctrl-primary-button" type="submit">Log In</button>
+                <!--END ctrl_btn-primary-->
+            </div>
+            }
+        </div>
+        <!--END .wp_login-block-->
+    </div>
+</div>
